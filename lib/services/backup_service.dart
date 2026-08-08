@@ -5,12 +5,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:intl/intl.dart';
 import 'storage_service.dart';
 import '../models/enterprise.dart';
-import '../models/flock.dart';
+import '../models/flock.dart'; // This file must exist now
 
 class BackupService {
   final StorageService _storage = StorageService();
 
-  // STATIC so you can call BackupService.exportData() from UI
   static Future<String> exportData() async {
     final service = BackupService();
     return await service._exportToJson();
@@ -21,16 +20,15 @@ class BackupService {
     return await service._importFromFile();
   }
 
-  // EXPORT TO JSON
   Future<String> _exportToJson() async {
     final enterprises = await _storage.getEnterprises();
     final flocks = await _storage.getFlocks();
 
     Map<String, dynamic> backup = {
-      'version': '1.0.40',
+      'version': '1.0.47',
       'exported_at': DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
       'enterprises': enterprises.map((e) => e.toJson()).toList(),
-      'flocks': flocks.map((e) => e.toJson()).toList(),
+      'flocks': flocks.map((f) => f.toJson()).toList(), // f not e to avoid confusion
     };
 
     final jsonString = jsonEncode(backup);
@@ -41,22 +39,18 @@ class BackupService {
     return file.path;
   }
 
-  // IMPORT FROM JSON
   Future<bool> _importFromFile() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['json'],
-        dialogTitle: 'Select PoultryNow Backup File',
       );
-
-      if (result == null) return false; // user cancelled
+      if (result == null) return false;
 
       File file = File(result.files.single.path!);
       String content = await file.readAsString();
       Map<String, dynamic> data = jsonDecode(content);
 
-      // Parse and save
       List<Enterprise> enterprises = [];
       if (data['enterprises'] != null) {
         enterprises = (data['enterprises'] as List)
@@ -66,13 +60,11 @@ class BackupService {
       List<Flock> flocks = [];
       if (data['flocks'] != null) {
         flocks = (data['flocks'] as List)
-            .map((e) => Flock.fromJson(e)).toList();
+            .map((f) => Flock.fromJson(f)).toList();
       }
 
-      // WARNING: This overwrites existing data
       await _storage.saveEnterprises(enterprises);
       await _storage.saveFlocks(flocks);
-
       return true;
     } catch (e) {
       print("Import Error: $e");
