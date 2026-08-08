@@ -1,71 +1,69 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
-import 'storage_service.dart'; // your existing service
+import 'package:intl/intl.dart';
+import 'storage_service.dart';
+import '../models/enterprise.dart';
+import '../models/flock.dart';
 
 class BackupService {
   final StorageService _storage = StorageService();
 
-  // EXPORT - you already have this
-  Future<String> exportDataToJson() async {
-    //... your existing export code
-    return "path/to/backup.json";
+  // STATIC METHODS so you can call BackupService.exportData()
+  static Future<String> exportData() async {
+    final service = BackupService();
+    return await service._exportToJson();
   }
 
-  // IMPORT - NEW CODE
-  Future<bool> importDataFromFile() async {
-    try {
-      // 1. Let user pick a file
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['json', 'csv'],
-      );
+  static Future<bool> importData() async {
+    final service = BackupService();
+    return await service._importFromFile();
+  }
 
-      if (result == null) return false; // user cancelled
+  // EXPORT
+  Future<String> _exportToJson() async {
+    final enterprises = await _storage.getEnterprises();
+    final flocks = await _storage.getFlocks();
 
-      File file = File(result.files.single.path!);
-      String extension = result.files.single.extension!;
+    Map<String, dynamic> data = {
+      'enterprises': enterprises.map((e) => e.toJson()).toList(),
+      'flocks': flocks.map((e) => e.toJson()).toList(),
+      'exported_at': DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+    };
 
-      if (extension == 'json') {
-        await _importFromJson(file);
-      } else if (extension == 'csv') {
-        await _importFromCsv(file);
-      }
+    final jsonString = jsonEncode(data);
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/poultrynow_backup.json');
+    await file.writeAsString(jsonString);
+    return file.path;
+  }
 
-      return true;
-    } catch (e) {
-      print("Import Error: $e");
-      return false;
+  // IMPORT
+  Future<bool> _importFromFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json', 'csv'],
+    );
+    if (result == null) return false;
+
+    File file = File(result.files.single.path!);
+    if (result.files.single.extension == 'json') {
+      await _importFromJson(file);
     }
+    return true;
   }
 
   Future<void> _importFromJson(File file) async {
     String content = await file.readAsString();
     Map<String, dynamic> data = jsonDecode(content);
 
-    // Example: assuming you saved enterprises as a list
-    List enterprises = data['enterprises']?? [];
-    await _storage.saveEnterprises(enterprises); // use your save method
+    List<Enterprise> enterprises = (data['enterprises'] as List)
+        .map((e) => Enterprise.fromJson(e)).toList();
+    List<Flock> flocks = (data['flocks'] as List)
+        .map((e) => Flock.fromJson(e)).toList();
 
-    List flocks = data['flocks']?? [];
+    await _storage.saveEnterprises(enterprises);
     await _storage.saveFlocks(flocks);
-    
-    // Add more tables here
-  }
-
-  Future<void> _importFromCsv(File file) async {
-    String content = await file.readAsString();
-    List<List<dynamic>> csvData = const CsvToListConverter().convert(content);
-    
-    // csvData[0] = headers, csvData[1...] = rows
-    // Convert rows back to objects and save with StorageService
-    // Example for enterprises:
-    for (int i = 1; i < csvData.length; i++) {
-      var row = csvData[i];
-      // Map row[0], row[1] etc to your Enterprise model
-      // await _storage.addEnterprise(enterprise);
-    }
   }
 }
