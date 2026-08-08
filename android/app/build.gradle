@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace "com.poultrynow.app" // change if yours is different
+    namespace "com.poultrynow.app" // keep yours the same if different
     compileSdk 34
-    ndkVersion "25.1.8937393"  // <-- ADD THIS LINE FOR FILE_PICKER
+    ndkVersion "25.1.8937393"  // <-- THIS FIXES THE FILE_PICKER ERROR
 
     defaultConfig {
-        applicationId "com.poultrynow.app" // change if yours is different
+        applicationId "com.poultrynow.app" // keep yours the same if different
         minSdk 21
         targetSdk 34
         versionCode 40
