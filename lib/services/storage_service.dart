@@ -1,54 +1,34 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/enterprise.dart';
+import '../models/flock.dart';
 
 class StorageService {
-  static const _keyUsername = 'username';
-  static const _keyEnterprises = 'enterprises';
-
-  Future<String?> getUsername() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_keyUsername);
-  }
-
-  Future<void> saveUsername(String username) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyUsername, username);
-  }
-
+  // GET
   Future<List<Enterprise>> getEnterprises() async {
     final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString(_keyEnterprises);
+    final data = prefs.getString('enterprises');
     if (data == null) return [];
-    final List jsonList = jsonDecode(data);
-    return jsonList.map((e) => Enterprise.fromJson(e)).toList();
+    return (jsonDecode(data) as List).map((e) => Enterprise.fromJson(e)).toList();
   }
 
-  Future<void> saveEnterprise(Enterprise enterprise) async {
-    final enterprises = await getEnterprises();
-    enterprises.add(enterprise);
-    await _saveAll(enterprises);
-  }
-
-  Future<void> deleteEnterprise(String id) async {
-    final enterprises = await getEnterprises();
-    enterprises.removeWhere((e) => e.id == id);
-    await _saveAll(enterprises);
-  }
-
-  Future<Map<String, dynamic>> getAllDataForBackup() async {
-    return {'enterprises': (await getEnterprises()).map((e) => e.toJson()).toList()};
-  }
-
-  Future<void> importData(Map<String, dynamic> data) async {
+  Future<List<Flock>> getFlocks() async {
     final prefs = await SharedPreferences.getInstance();
-    if (data['enterprises'] != null) {
-      await prefs.setString(_keyEnterprises, jsonEncode(data['enterprises']));
-    }
+    final data = prefs.getString('flocks');
+    if (data == null) return [];
+    return (jsonDecode(data) as List).map((e) => Flock.fromJson(e)).toList();
   }
 
-  Future<void> _saveAll(List<Enterprise> enterprises) async {
+  // SAVE - THESE WERE MISSING
+  Future<void> saveEnterprises(List<Enterprise> enterprises) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyEnterprises, jsonEncode(enterprises.map((e) => e.toJson()).toList()));
+    final data = jsonEncode(enterprises.map((e) => e.toJson()).toList());
+    await prefs.setString('enterprises', data);
+  }
+
+  Future<void> saveFlocks(List<Flock> flocks) async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = jsonEncode(flocks.map((e) => e.toJson()).toList());
+    await prefs.setString('flocks', data);
   }
 }
