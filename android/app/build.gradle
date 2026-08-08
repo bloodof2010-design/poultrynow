@@ -4,27 +4,9 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
 android {
-    namespace "com.example.poultrynow" // <-- IMPORTANT for V2 embedding
-    compileSdk 34
+    namespace "com.example.poultrynow"
+    compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -41,16 +23,16 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.poultrynow" // <-- Change if you want
-        minSdk 21
-        targetSdk 34
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        applicationId "com.example.poultrynow"
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutter.versionCode
+        versionName flutter.versionName
     }
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug // for now. We'll add real signing later
+            signingConfig signingConfigs.debug
         }
     }
 }
