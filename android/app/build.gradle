@@ -5,40 +5,30 @@ plugins {
 }
 
 android {
-    namespace "com.example.poultrynow"
-    compileSdkVersion 34
-    ndkVersion flutter.ndkVersion
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
+    namespace "com.poultrynow.app" // change if yours is different
+    compileSdk 34
+    ndkVersion "25.1.8937393"  // <-- ADD THIS LINE FOR FILE_PICKER
 
     defaultConfig {
-        applicationId "com.example.poultrynow"
-        minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 1
-        versionName "1.0.0"
+        applicationId "com.poultrynow.app" // change if yours is different
+        minSdk 21
+        targetSdk 34
+        versionCode 40
+        versionName "1.0.40"
     }
 
     buildTypes {
         release {
             signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
         }
     }
 }
 
 flutter {
-    source '../..'
+    source "../.."
 }
 
-dependencies {}
+dependencies {
+}
