@@ -41,7 +41,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('PoultryNow Dashboard'),
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -105,29 +104,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   title: 'Total Birds',
                   value: '1,250',
                   subtitle: 'Flock status healthy',
-                  icon: Icons.pets,
-                  iconColor: Colors.amber[800]!,
-                  cardColor: Colors.amber[50]!,
+                  icon: Icons.flutter_dash,
+                  iconColor: Colors.orange,
+                  cardColor: Colors.orange[50],
                 ),
                 const SizedBox(height: 16),
                 _buildMetricCard(
                   context,
-                  title: 'Eggs Today',
+                  title: 'Eggs Collected Today',
                   value: '840',
-                  subtitle: 'Production rate 92%',
-                  icon: Icons.egg,
-                  iconColor: Colors.orange[800]!,
-                  cardColor: Colors.orange[50]!,
+                  subtitle: '+5% compared to yesterday',
+                  icon: Icons.egg_outlined,
+                  iconColor: Colors.amber[800]!,
+                  cardColor: Colors.amber[50],
                 ),
                 const SizedBox(height: 16),
                 _buildMetricCard(
                   context,
-                  title: 'Feed Stock',
-                  value: '450 kg',
-                  subtitle: 'Sufficient for 12 days',
-                  icon: Icons.inventory_2,
-                  iconColor: Colors.teal[800]!,
-                  cardColor: Colors.teal[50]!,
+                  title: 'Active Houses',
+                  value: '4',
+                  subtitle: 'All ventilation systems normal',
+                  icon: Icons.house_outlined,
+                  iconColor: Colors.teal,
+                  cardColor: Colors.teal[50],
                 ),
                 const SizedBox(height: 32),
                 Center(
@@ -137,11 +136,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     label: const Text('Logout'),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
+                        horizontal: 24,
                         vertical: 12,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                   ),
@@ -161,7 +157,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     required String subtitle,
     required IconData icon,
     required Color iconColor,
-    required Color cardColor,
+    required Color? cardColor,
   }) {
     return Card(
       elevation: 2,
@@ -200,9 +196,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 4),
                   Text(
                     value,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
                         ),
                   ),
                   const SizedBox(height: 2),
