@@ -55,8 +55,8 @@ class PoultryNowApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-          brightness: Brightness.light,
+          seedColor: const Color(0xFF0F766E),
+          primary: const Color(0xFF0F766E),
         ),
         useMaterial3: true,
       ),
