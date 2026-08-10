@@ -31,6 +31,23 @@ jobs:
       - name: Get Flutter dependencies
         run: flutter pub get
 
+      - name: Ensure launcher icon exists
+        run: |
+          mkdir -p assets
+          if [ ! -f "assets/icon.png" ] || [ ! -s "assets/icon.png" ]; then
+            echo "assets/icon.png missing or empty, generating fallback icon..."
+            python3 -c "
+          import zlib, struct
+          def make_png(w, h, color=(15, 118, 110)):
+              raw = b''.join(b'\x00' + bytes(color) * w for _ in range(h))
+              def chunk(t, d):
+                  return struct.pack('>I', len(d)) + t + d + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+              return b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', struct.pack('>IIBBBBB', w, h, 8, 2, 0, 0, 0)) + chunk(b'IDAT', zlib.compress(raw)) + chunk(b'IEND', b'')
+          with open('assets/icon.png', 'wb') as f:
+              f.write(make_png(512, 512))
+          "
+          fi
+
       - name: Generate launcher icons
         run: dart run flutter_launcher_icons
 
