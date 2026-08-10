@@ -1,1 +1,13 @@
-https://cdn-icons-png.flaticon.com/512/3067/3067848.png
+// Place assets/icon.png next to src or under src/assets/
+// Example React component (App.jsx)
+import React from 'react';
+import icon from './assets/icon.png'; // relative to the JS file
+
+export default function App() {
+  return (
+    <div>
+      <h1>Logo</h1>
+      <img src={icon} alt="App icon" width={128} height={128} />
+    </div>
+  );
+}
